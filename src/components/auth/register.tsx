@@ -3,11 +3,12 @@ import React from 'react';
 import { Button, Col, Divider, Form, Input, notification, Row } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import Link from 'next/link';
+import { signIn } from '@/auth';
 
 const Register = () => {
 
     const onFinish = async (values: any) => {
-
+        
     };
 
     return (

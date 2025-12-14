@@ -1,13 +1,13 @@
-export {}
+export { }
 
-declare {
+declare global {
 
     interface IRequest {
         url: string,
         method: string,
         body?: {[key: string]: any},
         queryParams?: any,
-        useCredentials: boolean,
+        useCredentials?: boolean,
         headers?: any,
         nextOption?: any,
     }
@@ -28,7 +28,20 @@ declare {
         },
         result: T[]
     }
+
+    interface ILogin {
+        user: {
+            _id: string,
+            name: string,
+            email: string,
+        }
+        access_token: string,
+    }
 }
+
+
+
+
 
 
 
