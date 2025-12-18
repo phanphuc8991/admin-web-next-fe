@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import '@/app/globals.css'
 import { AntdRegistry } from '@ant-design/nextjs-registry';
+import { SessionProvider } from "next-auth/react";
 
 
 
@@ -17,9 +18,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body suppressHydrationWarning={true}>
-        <AntdRegistry>
+        <SessionProvider>
+           <AntdRegistry>
           {children}
         </AntdRegistry>
+        </SessionProvider>
+       
       </body>
     </html>
   );

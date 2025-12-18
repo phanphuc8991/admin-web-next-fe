@@ -1,29 +1,29 @@
 "use client";
 import React from "react";
-import { Button, Col, Divider, Form, Input, notification, Row } from "antd";
+import { Button, Col, Divider, Form, Input, message, notification, Row } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import { sendRequest } from "@/utils/api";
 import { useRouter } from "next/navigation";
-
-const Register = () => {
+const Verify = (props: any) => {
+  const { id } = props;
   const router = useRouter();
   const onFinish = async (values: any) => {
-    const { email, password, name } = values;
+    const { id, code } = values;
     const res: any = await sendRequest<IBackendRes<ILogin>>({
-      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/register`,
+      url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/check-code`,
       method: "POST",
       body: {
-        email,
-        password,
-        name,
+        _id: id,
+        code,
       },
     });
     if (res?.data) {
-      router.push(`/verify/${res?.data._id}`);
+      message.success("Active account successfull");
+      router.push(`/auth/login`);
     } else {
       notification.error({
-        message: <span>Error Login</span>,
+        message: <span>Verify Error</span>,
         description: <span>{res.message}</span>,
       });
     }
@@ -40,7 +40,7 @@ const Register = () => {
             borderRadius: "5px",
           }}
         >
-          <legend>Đăng Ký Tài Khoản</legend>
+          <legend>Active Account</legend>
           <Form
             name="basic"
             onFinish={onFinish}
@@ -48,21 +48,23 @@ const Register = () => {
             layout="vertical"
           >
             <Form.Item
-              label="Email"
-              name="email"
+              label="Id"
+              name="id"
               rules={[
                 {
                   required: true,
                   message: "Please input your email!",
                 },
               ]}
+              initialValue={id}
+              hidden
             >
-              <Input />
+              <Input disabled />
             </Form.Item>
 
             <Form.Item
-              label="Password"
-              name="password"
+              label="Code"
+              name="code"
               rules={[
                 {
                   required: true,
@@ -73,10 +75,8 @@ const Register = () => {
               <Input.Password />
             </Form.Item>
 
-            <Form.Item label="Name" name="name">
-              <Input />
-            </Form.Item>
-
+            <div>Code sent to your email, please check your email</div>
+            <Divider />
             <Form.Item>
               <Button type="primary" htmlType="submit">
                 Submit
@@ -95,5 +95,4 @@ const Register = () => {
     </Row>
   );
 };
-
-export default Register;
+export default Verify;

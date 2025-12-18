@@ -16,6 +16,10 @@ export async function authenticate(email: string, password: string) {
         code: 1,
       };
     } else if ((error as any).type === "InActiveAccountError") {
+      return {
+        error: (error as any).type,
+        code: 2,
+      };
     } else {
       return {
         error: (error as any).type,

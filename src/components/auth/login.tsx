@@ -1,23 +1,33 @@
 "use client";
-import { Button, Col, Divider, Form, Input, Row } from "antd";
+import { Button, Col, Divider, Form, Input, notification, Row } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
 import { authenticate } from "@/utils/actions";
+import { useRouter } from "next/navigation";
 
 
 const Login = () => {
-
+    const router = useRouter();
   const onFinish = async (values: any) => {
+  
     const { email, password } = values;
-     try {
-       const res =  await authenticate(email,password);
-       console.log("res",res);
-     } catch (error) {
-        console.log('error',error)
-     }
+    try {
+      const res = await authenticate(email, password);
+      if (res.error) {
+        notification.error({
+          message: <span>Error Login</span>,
+          description: <span>{res.message}</span>,
+        });
+        if(res.code ===2) {
+            
+        }
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
   };
-
 
   return (
     <Row justify={"center"} style={{ marginTop: "30px" }}>

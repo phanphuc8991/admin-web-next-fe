@@ -6,6 +6,8 @@ import {
   InvalidEmailPasswordError,
 } from "./utils/errors";
 import { sendRequest } from "./utils/api";
+import { IUser } from "./types/next-auth";
+import { AdapterUser } from "next-auth/adapters";
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
@@ -18,26 +20,45 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       authorize: async (credentials) => {
         const res = await sendRequest<IBackendRes<ILogin>>({
           method: "POST",
-          url: "http://localhost:8080/api/v1/auth/login",
+          url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/login`,
           body: {
             email: credentials.email,
             password: credentials.password,
           },
         });
-        if (!res.statusCode) {
+        if (!res.error) {
+          return res;
         } else if (res.statusCode === 401) {
-         
           throw new InvalidEmailPasswordError();
         } else if (res.statusCode === 400) {
           throw new InActiveAccountError();
         } else {
           throw new InternalServerError();
         }
-        return {};
       },
     }),
   ],
   pages: {
     signIn: "auth/login",
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.access_token = user.access_token;
+        token.user =( user.data.user as IUser) ;
+         
+         
+        };
+      
+      return token;
+    },
+    async session({ session, token }) {
+      session.access_token = token.access_token;
+      session.user = token.user as AdapterUser & IUser;
+      return session;
+    },
+     authorized: async ({ auth }) => {
+      return !!auth;
+    },
   },
 });
